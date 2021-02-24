@@ -90,6 +90,11 @@ class Exp_Informer(Exp_Basic):
         criterion =  nn.MSELoss()
         return criterion
 
+    def _get_number_parameters(self):
+        n = sum(para.numel() for para in self.model.parameters())
+        m = sum(para.numel() for para in self.model.parameters() if para.requires_grad)
+        return n, m
+
     def vali(self, vali_data, vali_loader, criterion):
         self.model.eval()
         total_loss = []
@@ -122,6 +127,9 @@ class Exp_Informer(Exp_Basic):
         vali_data, vali_loader = self._get_data(flag = 'val')
         test_data, test_loader = self._get_data(flag = 'test')
 
+        total_para, trainable_para = self._get_number_parameters()
+        print('Total number of parameters: {:d}'.format(total_para))
+        print('Number of trainable parameters: {:d}'.format(trainable_para))
         path = './checkpoints/'+setting
         if not os.path.exists(path):
             os.makedirs(path)
